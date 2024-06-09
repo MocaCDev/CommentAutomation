@@ -6,7 +6,7 @@
 def hello():
     print('Hello, World!')
 
-# END_IS_FOR
+# END
 
 # IS_FOR: something.py 
 # USAGE: I have no idea
@@ -15,4 +15,13 @@ def hello():
 
 def lol(): pass
 
-# END_IS_FOR
+# END
+
+# IS_FOR: something.py 
+# USAGE: Something cool
+# AT_COMMENT: 68
+# TIMES: 1
+
+def LMFAO(): pass
+
+# END

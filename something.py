@@ -6,7 +6,18 @@ def lol():
 def hello():
     print('Hello, World!')
 
-# HERE:  69
+# prints hello world
+def hello():
+    print('Hello, World!')
+
+# HERE:   68
+
+# prints hello world
+def hello():
+    print('Hello, World!')
+
+# I have no idea
+def lol(): pass
 
 # I have no idea
 def lol(): pass

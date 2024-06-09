@@ -6,7 +6,7 @@ class CommentAutomation:
         # The user has to pass the language of the code so we can decipher
         # what to look for in regards to comments. Each language is different.
         self.comment_type = ''
-        self.only_comment = ''
+        self.only_comment = []
 
         self.unused_code_file = ''
 
@@ -25,7 +25,13 @@ class CommentAutomation:
             if '-' in sys.argv[i]:
                 match sys.argv[i]:
                     case '-only':
-                        self.only_comment = sys.argv[i + 1]
+                        if ',' in sys.argv[i + 1]:
+                            values = sys.argv[i + 1].split(',')
+                            for v in values:
+                                self.only_comment.append(v)
+                        else:
+                            self.only_comment.append(sys.argv[i + 1])
+
                         i += 1
                     case _: pass
 
@@ -120,7 +126,7 @@ class CommentAutomation:
                         # This can be a common error with errors where there is a 
                         # different number of spaces/tabs in the comment.
                         if l2[1].replace(' ', '') == self.at_comment.replace(' ', ''):
-                            if not self.only_comment == '' and not self.at_comment.replace(' ', '') == self.only_comment:
+                            if not self.only_comment == [] and not self.at_comment.replace(' ', '') in self.only_comment:
                                 self.new_code.append(': '.join(l2))
                                 continue
 
