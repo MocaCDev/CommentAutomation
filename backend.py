@@ -35,14 +35,16 @@ class CommentAutomation:
 
                         i += 1
                     case '-multiline':
-                        match sys.argv[1]:
-                            case '-Python':
-                                self.is_multiline_comment = True
-                                self.comment_type = "\"\"\""
-                            case '-C' | '-C++' | '-QML' | '-GoLang':
-                                self.is_multiline_comment = True
-                                self.comment_type = '/*'
-                            case _: pass
+                        print('Multiline comment support is being added currently! Try cloning the repo again in a few days :)')
+
+                        #match sys.argv[1]:
+                        #    case '-Python':
+                        #        self.is_multiline_comment = True
+                        #        self.comment_type = "\"\"\""
+                        #    case '-C' | '-C++' | '-QML' | '-GoLang':
+                        #        self.is_multiline_comment = True
+                        #        self.comment_type = '/*'
+                        #    case _: pass
                     case _: pass
 
         # Keep track of the line we are at in the file where the unused code is stored.
