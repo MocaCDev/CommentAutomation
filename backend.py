@@ -50,6 +50,8 @@ class CommentAutomation:
 
         # This describes the number of times each "block" of code occurrs in the source
         # code file. Default value is 1.
+        # TODO: I am pretty sure this variable is useless. There are a few instances where this can be used however.
+        # TODO: Add features where the below variables will have more of a prominent standing in the automation.
         self.times_to_repeat = 1
 
         # This will be the actual "block" of code.
