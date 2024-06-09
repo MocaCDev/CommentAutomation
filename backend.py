@@ -109,8 +109,6 @@ class CommentAutomation:
                         if l2[1].replace(' ', '') == self.at_comment.replace(' ', ''):
                             code = self.code[self.code_index].split('\n')
 
-                            self.usage[0] = '\b'
-
                             # Add the comment above the "block" of code being added.
                             # The "block" of code being added gets added 1 line at 
                             # a time.
