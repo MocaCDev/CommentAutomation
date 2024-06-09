@@ -6,6 +6,7 @@ class CommentAutomation:
         # The user has to pass the language of the code so we can decipher
         # what to look for in regards to comments. Each language is different.
         self.comment_type = ''
+        self.is_multiline_comment = False
         self.only_comment = []
 
         self.unused_code_file = ''
@@ -33,6 +34,15 @@ class CommentAutomation:
                             self.only_comment.append(sys.argv[i + 1])
 
                         i += 1
+                    case '-multiline':
+                        match sys.argv[1]:
+                            case '-Python':
+                                self.is_multiline_comment = True
+                                self.comment_type = "\"\"\""
+                            case '-C' | '-C++' | '-QML' | '-GoLang':
+                                self.is_multiline_comment = True
+                                self.comment_type = '/*'
+                            case _: pass
                     case _: pass
 
         # Keep track of the line we are at in the file where the unused code is stored.
@@ -93,6 +103,45 @@ class CommentAutomation:
 
         # `l` = line
         for l in file_data:
+            if self.is_multiline_comment:
+                if self.comment_type in l:
+                    l = l.replace(self.comment_type, '')
+                    l = l.split('\n')
+
+                    for l2 in l:
+                        self.check_for_colon(l2)
+                        l2 = l2.split(':')
+
+                        l2[0] = l2[0].replace(self.comment_type, '')
+                        l2[0] = l2[0].replace(' ', '')
+
+                        match l2[0]:
+                            case 'IS_FOR': self.is_for_file = l2[1].replace(' ', '')
+                            case 'USAGE':
+                                for i in range(1, len(l2)):
+                                    self.usage += l2[i]
+
+                                # Getting rid of any unwanted spaces in the beginning/end of the string.
+                                self.usage = self.usage.split()
+                                self.usage = ' '.join(self.usage)
+
+                            case 'AT_COMMENT': self.at_comment = l2[1]
+                            case 'TIMES':
+                                l2[1] = l2[1].replace(' ', '')
+
+                                try:
+                                    self.times_to_repeat = int(l2[1])
+                                except Exception as e:
+                                    # This should (hopefully) never occurr, however it is better to play it safe and catch any sort of unwanted errors.
+                                    # Who knows, developers tend to make silly mistakes so.. better to account for the miscellaneous ones as well.
+                                    print(f'An error occurred whilst attempting to grab the integer value for `TIMES`.\n\tError: {str(e)}')
+                                    sys.exit(1)
+                            case _:
+                                print(f'Unknown formatter: {l2}')
+                                sys.exit(1)
+
+                continue
+
             if self.comment_type in l:
                 if 'END' in l:
                     if self.times_to_repeat > 1:
