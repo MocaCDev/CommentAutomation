@@ -2,11 +2,11 @@ import sys
 
 class CommentAutomation:
 
-    # `ucf` = Unused Code File.
     def __init__(self):
         # The user has to pass the language of the code so we can decipher
         # what to look for in regards to comments. Each language is different.
         self.comment_type = ''
+        self.only_comment = ''
 
         self.unused_code_file = ''
 
@@ -18,6 +18,16 @@ class CommentAutomation:
             case _:
                 print(f'{sys.argv[1]} is not a supported langauge, or has a typo.')
                 sys.exit(1)
+
+        for i in range(1, len(sys.argv)):
+            if i == len(sys.argv) - 1: break
+
+            if '-' in sys.argv[i]:
+                match sys.argv[i]:
+                    case '-only':
+                        self.only_comment = sys.argv[i + 1]
+                        i += 1
+                    case _: pass
 
         # Keep track of the line we are at in the file where the unused code is stored.
         # The file passed to this script has to follow the format. It is nice to print 
@@ -62,7 +72,10 @@ class CommentAutomation:
             print(f'Error on line {self.line} in {self.unused_code_file}: Missing colon.')
             sys.exit(1)
 
-    def good_to_set_file(self): self.unused_code_file = sys.argv[2]
+    def good_to_set_file(self): 
+        for i in range(0, len(sys.argv)):
+            if not '-' in sys.argv[i] and '.' in sys.argv[i]:
+                self.unused_code_file = sys.argv[i]
 
     # `file_data` will be the source code of the file with all of the code that is unused
     # but is saved just in case. It is in this file where the developer will need to 
@@ -107,12 +120,36 @@ class CommentAutomation:
                         # This can be a common error with errors where there is a 
                         # different number of spaces/tabs in the comment.
                         if l2[1].replace(' ', '') == self.at_comment.replace(' ', ''):
+                            if not self.only_comment == '' and not self.at_comment.replace(' ', '') == self.only_comment:
+                                self.new_code.append(': '.join(l2))
+                                continue
+
                             code = self.code[self.code_index].split('\n')
 
                             # Add the comment above the "block" of code being added.
                             # The "block" of code being added gets added 1 line at 
                             # a time.
-                            self.new_code.append(f'{self.comment_type} {self.usage}')
+                            comment_spacing = ''
+
+                            # We want to make sure the comment is aligned directly above the "block" of code.
+                            # We don't want it to where the "block" of code is indented and the comment is not, that will create more work
+                            # for the developer using the automation.
+                            if ' ' in code[0] or '\t' in code[0]:
+                                # Loop through the first line of the "block" of code and find all tabs/spaces.
+                                # We only need to loop through the first line, as the comment will be above the first line.
+                                # Any other tabs/spaces do not need to be accounted for.
+                                for i in code[0]:
+                                    if i == '\t':
+                                        comment_spacing += '\t'
+                                        continue
+                                    if i == ' ':
+                                        comment_spacing += ' '
+                                        continue 
+                                    
+                                    # The moment `i` is not a tab or a space, break out of the loop.
+                                    break
+
+                            self.new_code.append(f'{comment_spacing}{self.comment_type} {self.usage}')
 
                             for c in code:
                                 if c == '\n' or c == '': continue
@@ -159,13 +196,14 @@ class CommentAutomation:
                 # Just precautionary steps to make sure we are getting just the 
                 # value we need to get.
                 # It is important to note that formatters use underscores, not spaces.
-                l[0] = l[0].replace('#', '')
+                l[0] = l[0].replace(self.comment_type, '')
                 l[0] = l[0].replace(' ', '')
 
                 match l[0]:
                     case 'IS_FOR': self.is_for_file = l[1].replace(' ', '')
                     case 'USAGE':
-                        self.usage = l[1]
+                        for i in range(1, len(l)):
+                            self.usage += l[i]
 
                         # Getting rid of any unwanted spaces in the beginning/end of the string.
                         self.usage = self.usage.split()

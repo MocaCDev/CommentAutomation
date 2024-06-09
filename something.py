@@ -2,6 +2,15 @@
 def lol():
     print('wow fat ass')
 
+# prints hello world
+def hello():
+    print('Hello, World!')
+
+# HERE:  69
+
+# I have no idea
+def lol(): pass
+
 #  prints hello world
 def hello():
     print('Hello, World!')
@@ -16,6 +25,9 @@ print('hi!')
 #  I have no idea
 def lol():
     print('wow fat ass')
+
+# I have no idea
+def lol(): pass
 
 #  prints hello world
 def hello():
