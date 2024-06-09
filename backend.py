@@ -75,7 +75,7 @@ class CommentAutomation:
         # `l` = line
         for l in file_data:
             if self.comment_type in l:
-                if 'END_IS_FOR' in l:
+                if 'END' in l:
                     if self.times_to_repeat > 1:
                         for i in range(0, self.times_to_repeat):
                             self.code.append(self.current_code)
@@ -108,6 +108,8 @@ class CommentAutomation:
                         # different number of spaces/tabs in the comment.
                         if l2[1].replace(' ', '') == self.at_comment.replace(' ', ''):
                             code = self.code[self.code_index].split('\n')
+
+                            self.usage[0] = '\b'
 
                             # Add the comment above the "block" of code being added.
                             # The "block" of code being added gets added 1 line at 
@@ -164,11 +166,24 @@ class CommentAutomation:
 
                 match l[0]:
                     case 'IS_FOR': self.is_for_file = l[1].replace(' ', '')
-                    case 'USAGE': self.usage = l[1]
+                    case 'USAGE':
+                        self.usage = l[1]
+
+                        # Getting rid of any unwanted spaces in the beginning/end of the string.
+                        self.usage = self.usage.split()
+                        self.usage = ' '.join(self.usage)
+
                     case 'AT_COMMENT': self.at_comment = l[1]
                     case 'TIMES':
                         l[1] = l[1].replace(' ', '')
-                        self.times_to_repeat = int(l[1])
+
+                        try:
+                            self.times_to_repeat = int(l[1])
+                        except Exception as e:
+                            # This should (hopefully) never occurr, however it is better to play it safe and catch any sort of unwanted errors.
+                            # Who knows, developers tend to make silly mistakes so.. better to account for the miscellaneous ones as well.
+                            print(f'An error occurred whilst attempting to grab the integer value for `TIMES`.\n\tError: {str(e)}')
+                            sys.exit(1)
                     case _:
                         print(f'Unknown formatter: {l}')
                         sys.exit(1)
